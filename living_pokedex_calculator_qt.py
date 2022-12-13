@@ -82,19 +82,19 @@ class MyWidget(QtWidgets.QWidget):
         self.pokedex_dropdown = QtWidgets.QComboBox()
         self.populate_pokedex_dropdown()
         self.pokedex_dropdown.currentIndexChanged.connect( self.selected_pokedex_changed )
+        self.overall_layout.addWidget( self.pokedex_dropdown )
 
         self.tab_widget = QtWidgets.QTabWidget()
         self.number_widget = NumberWidget()
         self.tab_widget.addTab( self.number_widget, "Number" )
         self.name_widget = NameWidget()
         self.tab_widget.addTab( self.name_widget, "Name" )
-
+        self.overall_layout.addWidget( self.tab_widget )
 
         self.calculated_result = QtWidgets.QLabel( alignment = QtCore.Qt.AlignCenter )
-
-        self.overall_layout.addWidget( self.pokedex_dropdown )
-        self.overall_layout.addWidget( self.tab_widget )
         self.overall_layout.addWidget( self.calculated_result )
+        
+        self.overall_layout.addLayout( self.create_box_offset_layout() )
         
         self.buttons_layout = self.create_buttons_layout()
         self.overall_layout.addLayout( self.buttons_layout )
@@ -147,6 +147,22 @@ class MyWidget(QtWidgets.QWidget):
         buttons_veritcal_grid.addLayout( scroll_button_layout )
         
         return buttons_veritcal_grid
+
+    def create_box_offset_layout( self ):
+        spinedit_layout = QtWidgets.QHBoxLayout()
+
+        box_offset_label = QtWidgets.QLabel( "First Box Number:" )
+        spinedit_layout.addWidget( box_offset_label )
+
+        self.box_offset_spinedit = QtWidgets.QSpinBox()
+        self.box_offset_spinedit.setMinimum( 1 )
+        self.box_offset_spinedit.valueChanged.connect( self.box_offset_changed )
+        spinedit_layout.addWidget( self.box_offset_spinedit )
+        
+        self.box_offset_spinedit.setValue( 1 )
+        self.box_offset = 0
+        
+        return spinedit_layout
     
     @QtCore.Slot()
     def selected_pokedex_changed( self ):
@@ -168,6 +184,13 @@ class MyWidget(QtWidgets.QWidget):
         button = self.sender()
         
         self.change_highlighted_position_by_location( self.visible_box_index, button.row, button.column )
+    
+    @QtCore.Slot()
+    def box_offset_changed( self ):
+        self.box_offset = self.box_offset_spinedit.value() - 1
+        
+        # Trigger an update to the label
+        self.set_visible_box( self.visible_box_index )
     
     def change_highlighted_pokemon( self, search_term ):
         if not self.selected_pokedex:
@@ -218,7 +241,10 @@ class MyWidget(QtWidgets.QWidget):
         self.visible_box_index = box_index
 
         box_number = self.visible_box_index + 1
-        self.visible_box_label.setText( "Box {}".format( box_number ) )
+        if self.box_offset == 0:
+            self.visible_box_label.setText( "Box {}".format( box_number ) )
+        else:
+            self.visible_box_label.setText( "Box {} ({} before offset)".format( box_number + self.box_offset, box_number ) )
         
         # I'm using magic numbers fuck you
         box_starting_pokedex_number = self.visible_box_index * 30
