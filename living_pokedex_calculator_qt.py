@@ -1,5 +1,6 @@
 import os
 import sys
+import math
 from lib import util
 from lib import pokedex as pokedex_lib
 from PySide6 import QtCore, QtWidgets, QtGui
@@ -174,10 +175,15 @@ class MyWidget(QtWidgets.QWidget):
     def move_box_left( self ):
         if self.visible_box_index > 0:
             self.set_visible_box( self.visible_box_index - 1 )
+        else:
+            self.set_visible_box( self.calculate_maximum_box_index() )
     
     @QtCore.Slot()
     def move_box_right( self ):
-        self.set_visible_box( self.visible_box_index + 1 )
+        if ( self.visible_box_index + 1 ) <= self.calculate_maximum_box_index():
+            self.set_visible_box( self.visible_box_index + 1 )
+        else:
+            self.set_visible_box( 0 )
     
     @QtCore.Slot()
     def pokemon_clicked( self ):
@@ -234,9 +240,22 @@ class MyWidget(QtWidgets.QWidget):
         
         return self.selected_pokedex.pokemon[ self.highlighted_pokedex_number - 1 ].title()
     
+    def calculate_maximum_box_index( self ):
+        if not self.selected_pokedex:
+            return 0
+        
+        num_pokemon = len( self.selected_pokedex.pokemon )
+        
+        return math.ceil( num_pokemon / 30 ) - 1
+    
     def set_visible_box( self, box_index ):
         if not self.selected_pokedex:
             return
+        
+        max_index = self.calculate_maximum_box_index()
+
+        if box_index > max_index:
+            box_index = max_index
 
         self.visible_box_index = box_index
 
