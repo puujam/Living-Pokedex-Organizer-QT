@@ -14,6 +14,9 @@ def get_page( url ):
     return result
 
 def download_icon( pokemon_name, url ):
+    if not os.path.exists( util.ICON_DIR ):
+        os.makedirs( util.ICON_DIR )
+
     file_path = os.path.join( util.ICON_DIR, "{}.png".format( pokemon_name.lower() ) )
 
     print( "Downloading icon for {}...".format( pokemon_name ), end = "", flush = True )
@@ -25,6 +28,9 @@ def download_icon( pokemon_name, url ):
     print( "Done" )
 
 def dump_pokedex_file( game_name, region_name, pokemon ):
+    if not os.path.exists( util.POKEDEX_DIR ):
+        os.makedirs( util.POKEDEX_DIR )
+
     sanitized_game_name = game_name.replace( "&", "and" ).replace( ":", "" )
     file_path = os.path.normpath( os.path.join( util.POKEDEX_DIR, "{}.json".format( sanitized_game_name ) ) )
     
