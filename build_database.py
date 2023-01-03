@@ -158,8 +158,19 @@ def create_regional_dexes():
     
     return results
 
+def create_dlc_dexes():
+    results = list()
+
+    # These aren't new regions, they've got slightly weird URL formats but I want them represented
+    results.append( PokemonDBRegionalDex( "Sword & Shield - Isle of Armor", "Galar: Isle of Armor", "/pokedex/game/sword-shield/isle-of-armor" ) )
+    results.append( PokemonDBRegionalDex( "Sword & Shield - Crown Tundra", "Galar: Crown Tundra", "/pokedex/game/sword-shield/crown-tundra" ) )
+    
+    return results
+
 def main():
     regional_dexes = create_regional_dexes()
+    regional_dexes.extend( create_dlc_dexes() )
+
     for regional_dex in regional_dexes:
         regional_dex.dump_to_file()
 
