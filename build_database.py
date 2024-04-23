@@ -108,7 +108,7 @@ class PokemonDBIconGrabber():
             self.pokemon.add( pokemon_name )
             
             image_column = entry.find( class_ = "cell-num cell-fixed" )
-            image_span = image_column.find( "span", class_ = "infocard-cell-img" )
+            image_span = image_column.find( "picture", class_ = "infocard-cell-img" )
             image_tag = image_span.img
             image_url = image_tag[ "src" ]
             download_icon( pokemon_name, image_url )
